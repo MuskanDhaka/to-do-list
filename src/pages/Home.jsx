@@ -1,11 +1,14 @@
-import Header from '@components/Header'
-import TaskInput from '@components/TaskInput'
+// import Footer from '@components/Footer'
+// import TaskItem from '@components/TaskItem'
+import TaskList from "@components/TaskList";
+import TaskInput from "@components/TaskInput";
 const Home = () => {
-    return (
-        <>
-        <Header/>
-        <TaskInput/>
-        </>
-    )
-}
+  return (
+    <>
+      <TaskInput />
+      <TaskList />
+      {/* <Footer/> */}
+    </>
+  );
+};
 export default Home;
