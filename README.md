@@ -1,12 +1,40 @@
-# React + Vite
+📝 To-Do List App
+A simple and efficient To-Do List application built with React (Vite) and Redux Toolkit for state management. This app allows users to add, delete, and mark tasks as complete with a clean and responsive UI.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✨ Features
+✅ Add new tasks easily
+✅ Mark tasks as completed (with strikethrough effect)
+✅ Delete tasks when no longer needed
+✅ State management using Redux Toolkit
+✅ Responsive and clean UI
 
-Currently, two official plugins are available:
+🛠️ Tech Stack
+React (Vite) – Fast and optimized front-end framework
+Redux Toolkit – Efficient state management
+React Icons – For intuitive UI elements
+CSS – Styled for a seamless user experience
+🚀 Getting Started
+1️⃣ Clone the Repository
+sh
+Copy
+Edit
+git clone https://github.com/your-username/todo-list.git
+cd todo-list
+2️⃣ Install Dependencies
+sh
+Copy
+Edit
+npm install
+3️⃣ Start the Development Server
+sh
+Copy
+Edit
+npm run dev
+📸 Preview
+(Include a screenshot or GIF of your app here)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🤝 Contributing
+Feel free to fork the repository and submit pull requests!
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+📜 License
+This project is open-source and available under the MIT License.
