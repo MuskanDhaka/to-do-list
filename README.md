@@ -18,7 +18,7 @@ CSS – Styled for a seamless user experience
 sh
 Copy
 Edit
-git clone https://github.com/your-username/todo-list.git
+git clone https://github.com/MuskanDhaka/to-do-list)
 cd todo-list
 2️⃣ Install Dependencies
 sh
