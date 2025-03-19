@@ -25,12 +25,16 @@ const taskItemSlice = createSlice({
     },
     reorderTasks: (state, action) => {
       const { from, to } = action.payload;
-      const [movedTask] = state.tasks.splice(from, 1);
-      state.tasks.splice(to, 0, movedTask);
+      if (from === to) return;
+
+      const updatedTasks = [...state.tasks];
+      const [movedTask] = updatedTasks.splice(from, 1);
+      updatedTasks.splice(to, 0, movedTask);
+
+      state.tasks = updatedTasks; // ✅ Fix: Assign new array for reactivity
     },
   },
 });
 
 export default taskItemSlice.reducer;
-export const { addTask, deleteTask, toggleTask, reorderTasks } =
-  taskItemSlice.actions;
+export const { addTask, deleteTask, toggleTask, reorderTasks } = taskItemSlice.actions;
