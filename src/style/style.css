@@ -242,6 +242,11 @@ body {
   box-shadow: var(--box-shadow);
   transition: background-color 0.5s ease;
 }
+.title{
+    /* width:80px; */
+    margin-right: 50px;
+    background-color: blue;
+}
 
 .task-input button,
 .contact-form button {

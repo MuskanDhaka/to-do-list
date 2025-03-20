@@ -10,13 +10,30 @@ import { IoMdDoneAll } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteTask, toggleTask, reorderTasks } from "@redux/taskItemSlice";
+import { BsRecycle } from "react-icons/bs";
+import { IoMdArchive } from "react-icons/io";
+import { toast } from "sonner";
 
-// 🔹 Sortable Task Item Component
 const SortableTaskItem = ({ task }) => {
   const dispatch = useDispatch();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task.id });
+const handleCompletedTask = async ({id,status}) => {
+  try{
+    console.log("hello");
+    const response = await toggleTask(id,status);
+    if(response.data.success){
+      toast.success("Task updated successfully");
+    }
+    
 
+
+    
+  }catch(error){
+    console.log("Error in fetching data: ", error);
+    toast.error("Failed to fetch data");
+  }
+}
   return (
     <li
       ref={setNodeRef}
@@ -24,7 +41,9 @@ const SortableTaskItem = ({ task }) => {
       {...listeners}
       style={{
         textDecoration: task.isCompleted ? "line-through" : "none",
-        background: task.isCompleted ? "rgba(161, 28, 155, 0.5)" : "rgba(6, 14, 92, 0.2)",
+        background: task.isCompleted
+          ? "rgba(161, 28, 155, 0.5)"
+          : "rgba(6, 14, 92, 0.2)",
         transform: CSS.Transform.toString(transform),
         transition,
         padding: "10px",
@@ -36,26 +55,38 @@ const SortableTaskItem = ({ task }) => {
         alignItems: "center",
       }}
     >
+      <h3>{task.title}</h3>
       <span>{task.value}</span>
+
       <div>
-        {/* ✅ Fix: Prevent drag interference on button click */}
+        <select selected={task.priority || "medium"}>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
         <button
           onClick={(e) => {
             e.stopPropagation();
-            dispatch(deleteTask(task.id));
+            dispatch(deleteTask(task.id)); 
           }}
-          onPointerDown={(e) => e.stopPropagation()} // 🔥 Fix for button not working
         >
           <MdDeleteOutline />
         </button>
         <button
           onClick={(e) => {
             e.stopPropagation();
-            dispatch(toggleTask(task.id));
+            dispatch(toggleTask(task.id)); 
+            handleCompletedTask(task.id,task.status);
           }}
-          onPointerDown={(e) => e.stopPropagation()} // 🔥 Fix for button not working
         >
           <IoMdDoneAll />
+        </button>
+        
+        <button onClick={(e) => console.log("Event", e)}>
+          <BsRecycle />
+        </button>
+        <button onClick={(e) => console.log("Event", e)}>
+          <IoMdArchive />
         </button>
       </div>
     </li>
@@ -86,7 +117,10 @@ const TaskList = () => {
       {taskItems.length === 0 ? <h2>Add tasks</h2> : null}
       <div className="tasks-div">
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={taskItems.map((task) => task.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={taskItems.map((task) => task.id)}
+            strategy={verticalListSortingStrategy}
+          >
             <ul>
               {taskItems.map((task) => (
                 <SortableTaskItem key={task.id} task={task} />

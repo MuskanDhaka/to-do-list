@@ -1,38 +1,96 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { Toaster, toast } from "sonner";
-import { MdOutlinePlaylistAdd } from "react-icons/md";
-import { BiTask, BiTaskX } from "react-icons/bi";
-
+import { useDispatch } from "react-redux";
 import { MdArchive } from "react-icons/md";
 import { BiSolidHide } from "react-icons/bi";
-
-import { useDispatch } from "react-redux";
 import { addTask } from "@redux/taskItemSlice";
-//add task is action
+import { getTask } from "../../api/todoService";
+import { BiTask, BiTaskX } from "react-icons/bi";
+import { clearTasks } from "@redux/taskItemSlice";
+import { createTask } from "../../api/todoService";
+import { MdOutlinePlaylistAdd } from "react-icons/md";
+
 const TaskInput = () => {
+  const dispatch = useDispatch();
   const [task, setTask] = useState("");
-  const dispatch = useDispatch(); //useDispatch is to dispatch actions
-  const insertTask = () => {
-    console.log("Task : ", task);
-    toast.success("task added successfully");
-    dispatch(addTask(task));
+  const [heading, setHeading] = useState("");
+
+  // Function to insert a task
+  const handleInsertTask = async () => {
+    if (!task.trim() || !heading.trim()) {
+      toast.error("Task cannot be empty");
+      return;
+    }
+    await createTask({ title: heading, description: task, dispatch, addTask });
+    setHeading("");
     setTask("");
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getTask();
+        console.log("Data: ", data);
+        if (data) {
+          dispatch(clearTasks());
+          data.forEach((task) => {
+            dispatch(addTask(task));
+          });
+        } else {
+          dispatch(clearTasks());
+        }
+      } catch (error) {
+        console.log("Error in fetching data: ", error);
+        toast.error("Failed to fetch data");
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleCompletedTask = async () => {
+    try {
+      const data = await getTask();
+      console.log("Data: ", data);
+      if (data) {
+        dispatch(clearTasks());
+        data.forEach((task) => {
+          if(task.status === "completed"){
+            dispatch(addTask(task));
+          }
+          
+        });
+      } else {
+        dispatch(clearTasks());
+      }
+    } catch (error) {
+      console.log("Error in fetching data: ", error);
+      toast.error("Failed to fetch data");
+    }
+  }
+
   return (
     <div className="task-input">
       <Toaster position="top-center" />
       <input
         type="text"
-        placeholder="Add a  task..."
+        className="title"
+        placeholder="Add a title..."
+        value={heading}
+        onChange={(e) => setHeading(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Add a task..."
         value={task}
         onChange={(e) => setTask(e.target.value)}
       />
-      <button className="task-button" onClick={insertTask}>
+      <button className="task-button" onClick={handleInsertTask}>
         <MdOutlinePlaylistAdd />
       </button>
       <button
         className="task-button"
-        onClick={() => toast.info("Task deleted")}
+        onClick={handleCompletedTask}
       >
         <BiTask />
       </button>
