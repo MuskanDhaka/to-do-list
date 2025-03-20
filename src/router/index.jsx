@@ -1,32 +1,46 @@
-import Home from "@pages/Home";
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import AppLayout from "../App"; // Import AppLayout here
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AppLayout from "../App";
+import LoginPage from "../components/Auth/Login";
+import SignUpPage from "../components/Auth/SignUp";
 
+const Home = lazy(() => import("@pages/Home"));
 const About = lazy(() => import("@pages/About"));
 const Contact = lazy(() => import("@pages/Contact"));
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppLayout />, // ✅ Wrap all routes in AppLayout
+    element: <LoginPage />,
+  },
+  {
+    path: "/signUp",
+    element: <SignUpPage />,
+  },
+  {
+    path: "/",
+    element: <AppLayout />,
     children: [
       {
-        path: "/",
-        element: <Home />,
+        path: "home",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Home />
+          </Suspense>
+        ),
       },
       {
-        path: "/about",
+        path: "about",
         element: (
-          <Suspense fallback="Loading">
+          <Suspense fallback={<div>Loading...</div>}>
             <About />
           </Suspense>
         ),
       },
       {
-        path: "/contact",
+        path: "contact",
         element: (
-          <Suspense fallback="Loading">
+          <Suspense fallback={<div>Loading...</div>}>
             <Contact />
           </Suspense>
         ),

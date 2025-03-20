@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Toaster, toast } from "sonner";
-import { IoIosAdd } from "react-icons/io";
+import { MdOutlinePlaylistAdd } from "react-icons/md";
+import { BiTask, BiTaskX } from "react-icons/bi";
+
+import { MdArchive } from "react-icons/md";
+import { BiSolidHide } from "react-icons/bi";
+
 import { useDispatch } from "react-redux";
 import { addTask } from "@redux/taskItemSlice";
 //add task is action
@@ -23,7 +28,31 @@ const TaskInput = () => {
         onChange={(e) => setTask(e.target.value)}
       />
       <button className="task-button" onClick={insertTask}>
-        <IoIosAdd />
+        <MdOutlinePlaylistAdd />
+      </button>
+      <button
+        className="task-button"
+        onClick={() => toast.info("Task deleted")}
+      >
+        <BiTask />
+      </button>
+      <button
+        className="task-button"
+        onClick={() => toast.error("Task completed")}
+      >
+        <BiTaskX />
+      </button>
+      <button
+        className="task-button"
+        onClick={() => toast.warning("Task archived")}
+      >
+        <MdArchive />
+      </button>
+      <button
+        className="task-button"
+        onClick={() => toast.success("Task hidden")}
+      >
+        <BiSolidHide />
       </button>
     </div>
   );
