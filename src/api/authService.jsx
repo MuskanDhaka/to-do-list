@@ -6,7 +6,7 @@ export const fetchLoginData = async ({
   navigate,
 }) => {
   try {
-    const response = await axiosInstance.post("http://192.168.1.4:3000/login", {
+    const response = await axiosInstance.post("/login", {
       emailId: emailValue,
       password: passwordValue,
     });
@@ -39,7 +39,7 @@ export const fetchSignupData = async ({
 }) => {
   try {
     const response = await axiosInstance.post(
-      "http://192.168.1.45:3000/signup",
+      "/signup",
       {
         firstName,
         lastName,

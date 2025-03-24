@@ -1,55 +1,85 @@
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-
+import { toast } from "sonner";
+import { IoMdArchive } from "react-icons/io";
 import { IoMdDoneAll } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
+import { removeTask, updateTask, archiveTask } from "../../api/todoService";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteTask, toggleTask, reorderTasks } from "@redux/taskItemSlice";
-import { BsRecycle } from "react-icons/bs";
-import { IoMdArchive } from "react-icons/io";
-import { toast } from "sonner";
+import { deleteTask, toggleTask } from "@redux/taskItemSlice";
+import { BiSolidHide } from "react-icons/bi";
 
-const SortableTaskItem = ({ task }) => {
+const TaskItem = ({ task }) => {
   const dispatch = useDispatch();
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: task.id });
-const handleCompletedTask = async ({id,status}) => {
-  try{
-    console.log("hello");
-    const response = await toggleTask(id,status);
-    if(response.data.success){
-      toast.success("Task updated successfully");
+
+  const handleDeleteTask = async (id) => {
+    try {
+      const msg = await removeTask({ id });
+      if (msg) {
+        dispatch(deleteTask(id));
+        toast.success("Task deleted successfully");
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      toast.error("Failed to delete task");
     }
-    
+  };
 
+  const handleCompletedTask = async (id, status) => {
+    try {
+      // console.log("id:", id);
+      // console.log("status before toggle:", status);
+      const updatedStatus = status === "completed" ? "pending" : "completed";
 
-    
-  }catch(error){
-    console.log("Error in fetching data: ", error);
-    toast.error("Failed to fetch data");
+      const msg = updateTask({ id, status: updatedStatus });
+      if (msg) {
+        dispatch(toggleTask(id));
+        toast.success("Task status updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+      toast.error("Failed to update task");
+    }
+  };
+
+  const handleArchiveTask = async (id) => {
+    console.log("Archive clicked");
+    try {
+      const msg = await archiveTask({ id, filter: "archive" });
+      if (msg) {
+        dispatch(deleteTask(id));
+        toast.success("Task archived successfully");
+      }
+    } catch (error) {
+      console.error("Error archive task:", error);
+      toast.error("Failed to archive task");
+    }
+  };
+
+  const handleHiddenTask = async (id) => {
+    console.log("Hide clicked");
+    try{
+      const msg = await archiveTask({id,filter:"hidden"});
+      if(msg){
+        dispatch(deleteTask(id));
+        toast.success("Task hidden successfully");
+      } 
+    } catch(error) {
+      console.error("Error hiding task:", error);
+      toast.error("Failed to hide task");
+    }
+
   }
-}
+
+
   return (
     <li
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
       style={{
         textDecoration: task.isCompleted ? "line-through" : "none",
         background: task.isCompleted
           ? "rgba(161, 28, 155, 0.5)"
           : "rgba(6, 14, 92, 0.2)",
-        transform: CSS.Transform.toString(transform),
-        transition,
         padding: "10px",
         margin: "5px",
         borderRadius: "5px",
-        cursor: "grab",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -59,75 +89,64 @@ const handleCompletedTask = async ({id,status}) => {
       <span>{task.value}</span>
 
       <div>
-        <select selected={task.priority || "medium"}>
+        <select
+          defaultValue={task.priority || "medium"}
+          style={{
+            padding: "5px",
+            margin: "5px",
+            borderRadius: "5px",
+            border: "none",
+            background: "rgba(6, 14, 92, 0.2)",
+            color: "white",
+            fontSize: "14px",
+            cursor: "pointer",
+            transition: "background 0.3s ease",
+            ":hover": {
+              background: "rgba(6, 14, 92, 0.5)",
+            },
+          }}
+        >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
         </select>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatch(deleteTask(task.id)); 
-          }}
-        >
+
+        <button onClick={() => handleDeleteTask(task.id)}>
           <MdDeleteOutline />
         </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatch(toggleTask(task.id)); 
-            handleCompletedTask(task.id,task.status);
-          }}
-        >
+
+        <button onClick={() => handleCompletedTask(task.id, task.status)}>
           <IoMdDoneAll />
         </button>
-        
-        <button onClick={(e) => console.log("Event", e)}>
-          <BsRecycle />
-        </button>
-        <button onClick={(e) => console.log("Event", e)}>
+        <button onClick={() => handleArchiveTask(task.id)}>
           <IoMdArchive />
+        </button>
+        <button onClick={() => handleHiddenTask(task.id)}>
+          <BiSolidHide />
         </button>
       </div>
     </li>
   );
 };
 
-// 🔹 Main Task List Component
 const TaskList = () => {
   const taskItems = useSelector((store) => store.taskItems.tasks);
-  const dispatch = useDispatch();
-
-  // Handle Drag End
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = taskItems.findIndex((task) => task.id === active.id);
-    const newIndex = taskItems.findIndex((task) => task.id === over.id);
-
-    if (oldIndex !== -1 && newIndex !== -1) {
-      dispatch(reorderTasks({ from: oldIndex, to: newIndex }));
-    }
-  };
 
   return (
-    <div className="task-list-container">
+    <div
+      className="task-list-container"
+      style={{ maxHeight: "400px", overflowY: "auto" }}
+    >
       <h2>Task List</h2>
       {taskItems.length === 0 ? <h2>Add tasks</h2> : null}
-      <div className="tasks-div">
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={taskItems.map((task) => task.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <ul>
-              {taskItems.map((task) => (
-                <SortableTaskItem key={task.id} task={task} />
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
+      <div style={{ overflowY: "auto", maxHeight: "300px" }}>
+        <ul>
+          {taskItems
+            .filter((task) => task.filter === "visible")
+            .map((task) => (
+              <TaskItem key={task.id} task={task} />
+            ))}
+        </ul>
       </div>
     </div>
   );

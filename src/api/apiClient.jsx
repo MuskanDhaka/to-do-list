@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://192.168.1.4:3000",
+  baseURL: "https://formloginbackend.onrender.com",
   timeout: 5000,
   headers: {
     "Content-type": "application/json",
