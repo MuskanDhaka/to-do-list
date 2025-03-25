@@ -37,6 +37,8 @@ export const getTask = async () => {
   }
 };
 
+
+//update task API 
 export const updateTask = async ({ id, status }) => {
   try {
     const response = await axiosInstance.patch(`/todo/${id}`, { status });
@@ -53,6 +55,8 @@ export const updateTask = async ({ id, status }) => {
   }
 };
 
+
+//remove task API 
 export const removeTask = async ({ id }) => {
   try {
     console.log("todoId: ", id);
@@ -70,6 +74,9 @@ export const removeTask = async ({ id }) => {
   }
 };
 
+
+
+//get pending tasks API
 export const getPendingTask = async () => {
   try {
     const response = await axiosInstance.get(
@@ -86,6 +93,8 @@ export const getPendingTask = async () => {
   }
 };
 
+
+//get archive task API 
 export const archiveTask = async ({ id, filter }) => {
   try {
     const response = await axiosInstance.patch(`/todo/${id}`, { filter });

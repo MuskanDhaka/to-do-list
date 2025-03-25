@@ -142,7 +142,7 @@ const TaskList = () => {
       <div style={{ overflowY: "auto", maxHeight: "300px" }}>
         <ul>
           {taskItems
-            .filter((task) => task.filter === "visible")
+            .filter((task) => task.filter === "visible" || task.filter === "archive" || task.filter === "hidden") 
             .map((task) => (
               <TaskItem key={task.id} task={task} />
             ))}
